@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>The Rule of 5 · Weekly Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@600;700;800;900&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--orange:#e05a28;--cream:#f0ebe0;--card:#e8e0d0;--dark:#1e1a14;--mid:#5a5248;--light:#8a8078}
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:#2a2520;font-family:'Inter',sans-serif;color:var(--dark);-webkit-text-size-adjust:100%}
+  .wrap{max-width:760px;margin:0 auto;background:var(--cream);min-height:100vh}
+  .topbar{position:sticky;top:0;z-index:10;background:rgba(240,235,224,0.96);backdrop-filter:blur(6px);border-bottom:1px solid rgba(0,0,0,0.1);padding:10px 18px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .who{font-weight:700;font-size:14px}
+  .badge{font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:4px 9px;border-radius:20px;white-space:nowrap}
+  .badge.read{background:#ddd3c4;color:var(--mid)}
+  .badge.edit{background:var(--orange);color:#fff}
+  .save{font-size:11px;color:var(--light);min-width:60px;text-align:right}
+  .pad{padding:26px 22px 60px}
+  .eyebrow{font-size:10.5px;font-weight:700;color:var(--orange);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px}
+  h1.title{font-family:'Barlow',sans-serif;font-weight:900;font-size:44px;line-height:1;letter-spacing:-.01em;text-transform:uppercase;margin:0 0 12px}
+  .subtitle{font-family:'Libre Baskerville',serif;font-style:italic;color:var(--mid);font-size:15px;line-height:1.5;margin-bottom:20px}
+  .rule{border-top:3px solid var(--orange);width:70px;margin:0 0 22px}
+  details.rules{background:var(--card);border-radius:8px;padding:6px 16px;margin-bottom:26px}
+  details.rules summary{cursor:pointer;font-weight:700;font-size:12px;letter-spacing:.05em;text-transform:uppercase;padding:10px 0;list-style:none}
+  details.rules summary::-webkit-details-marker{display:none}
+  details.rules summary::after{content:" +";color:var(--orange)}
+  details.rules[open] summary::after{content:" –"}
+  .rref{display:flex;gap:12px;padding:10px 0;border-top:1px solid rgba(0,0,0,0.08)}
+  .num{width:26px;height:26px;border-radius:50%;background:var(--orange);color:#fff;font-family:'Barlow',sans-serif;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+  .rttl{font-weight:700;font-size:11.5px;letter-spacing:.03em;text-transform:uppercase;margin-bottom:3px}
+  .rbody{font-size:12px;color:var(--mid);line-height:1.55}
+  .wkpick{display:flex;gap:6px;overflow-x:auto;padding:4px 2px 12px;-webkit-overflow-scrolling:touch}
+  .wkbtn{flex:0 0 auto;min-width:40px;height:40px;border-radius:8px;border:none;background:#e2d9c8;color:var(--mid);font-weight:700;font-size:13px;cursor:pointer}
+  .wkbtn.active{background:var(--orange);color:#fff}
+  .wkbtn.done{box-shadow:inset 0 -3px 0 #2f9e5f}
+  h2.wktitle{font-family:'Libre Baskerville',serif;font-weight:700;font-size:30px;margin:6px 0 4px;color:var(--dark)}
+  .wkmeta{font-size:10.5px;font-weight:700;color:var(--orange);letter-spacing:.1em;text-transform:uppercase}
+  .wksub{font-size:13px;color:var(--mid);margin-bottom:18px}
+  .section-label{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin:22px 0 4px}
+  .section-hint{font-size:11.5px;color:var(--light);margin-bottom:12px;line-height:1.4}
+  .cic{background:var(--card);border-radius:8px;padding:12px 14px;margin-bottom:10px}
+  .cictop{display:flex;gap:11px;align-items:flex-start}
+  .cittl{font-weight:600;font-size:13px;line-height:1.35;margin-bottom:9px}
+  .seg{display:flex;gap:7px;flex-wrap:wrap}
+  .segb{border:1.5px solid var(--light);background:transparent;color:var(--mid);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit}
+  .segb.on-faithful{background:#2f9e5f;border-color:#2f9e5f;color:#fff}
+  .segb.on-partial{background:#e0a12a;border-color:#e0a12a;color:#fff}
+  .segb.on-missed{background:#c0503a;border-color:#c0503a;color:#fff}
+  .note{margin-bottom:16px}
+  .notelabel{font-size:11px;font-weight:600;color:var(--orange);letter-spacing:.05em;text-transform:uppercase}
+  .notehint{font-size:11px;color:var(--light);margin:2px 0 6px}
+  textarea{width:100%;border:none;border-bottom:1.5px solid rgba(0,0,0,0.18);background:transparent;font-family:inherit;font-size:14px;color:var(--dark);resize:none;padding:6px 2px;line-height:1.5;min-height:30px;overflow:hidden}
+  textarea:focus{outline:none;border-bottom-color:var(--orange)}
+  textarea:read-only{color:var(--mid);border-bottom-style:dotted}
+  .friday{background:#edd8c8;border-radius:8px;padding:14px 16px;margin-top:20px}
+  .fqlabel{font-size:10px;font-weight:700;color:var(--orange);letter-spacing:.09em;text-transform:uppercase;margin-bottom:6px}
+  .fqtext{font-size:14px;line-height:1.5;margin-bottom:8px}
+  .footer{text-align:center;font-size:10px;font-weight:600;color:var(--light);letter-spacing:.08em;text-transform:uppercase;margin-top:34px}
+  .readbanner{background:#e8ddd0;border:1px solid rgba(0,0,0,0.08);border-radius:8px;padding:11px 14px;font-size:12.5px;color:var(--mid);margin-bottom:20px;line-height:1.45}
+  .readbanner b{color:var(--dark)}
+  /* chooser */
+  .chooser{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+  .cwrap{background:var(--cream);border-radius:14px;max-width:440px;width:100%;padding:40px 34px;text-align:center}
+  .cwrap h1{font-family:'Barlow',sans-serif;font-weight:900;font-size:40px;margin:0 0 4px;text-transform:uppercase}
+  .cwrap .cbar{width:60px;height:3px;background:var(--orange);margin:0 auto 18px}
+  .cwrap .csub{font-family:'Libre Baskerville',serif;font-style:italic;color:var(--mid);margin-bottom:26px}
+  .cwrap a{display:block;background:var(--card);border-radius:9px;padding:15px 18px;margin:11px 0;text-decoration:none;color:var(--dark);font-weight:600;font-size:16px}
+  .cwrap a:hover{background:var(--orange);color:#fff}
+  @media(max-width:520px){ h1.title{font-size:36px} h2.wktitle{font-size:25px} .pad{padding:22px 16px 50px} }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const API = "https://knasgirifxhpaagiqioh.supabase.co/functions/v1/booklet";
+const qs = new URLSearchParams(location.search);
+const ID = qs.get("b");
+const editKey = qs.get("edit") || "";
+
+const root = document.getElementById("root");
+let D = null, state = { weeks: {} }, canEdit = false, current = null, saveTimer = null;
+
+function el(tag, props, kids) {
+  const e = document.createElement(tag);
+  if (props) for (const k in props) {
+    if (k === "style") Object.assign(e.style, props.style);
+    else if (k === "class") e.className = props[k];
+    else if (k === "html") e.innerHTML = props[k];
+    else if (k === "text") e.textContent = props[k];
+    else if (k.startsWith("on") && typeof props[k] === "function") e.addEventListener(k.slice(2).toLowerCase(), props[k]);
+    else e.setAttribute(k, props[k]);
+  }
+  if (kids != null) (Array.isArray(kids) ? kids : [kids]).forEach(c => {
+    if (c == null || c === false) return;
+    e.appendChild(typeof c === "object" ? c : document.createTextNode(String(c)));
+  });
+  return e;
+}
+const STATUS = ["faithful", "partial", "missed"];
+
+function chooser() {
+  root.innerHTML = "";
+  root.appendChild(el("div", { class: "chooser" },
+    el("div", { class: "cwrap" }, [
+      el("div", { class: "cbar" }),
+      el("h1", { text: "The Rule of 5" }),
+      el("div", { class: "csub", text: "A weekly rule for a whole life" }),
+      el("a", { href: "?b=vlad", text: "Vlad's Tracker →" }),
+      el("a", { href: "?b=david", text: "David's Tracker →" }),
+    ])
+  ));
+}
+
+function wk(num) {
+  if (!state.weeks) state.weeks = {};
+  if (!state.weeks[num]) state.weeks[num] = { status: [null, null, null, null, null], notes: { opp: "", cha: "", chg: "" }, friday: "" };
+  const w = state.weeks[num];
+  if (!Array.isArray(w.status)) w.status = [null, null, null, null, null];
+  if (!w.notes) w.notes = { opp: "", cha: "", chg: "" };
+  if (typeof w.friday !== "string") w.friday = "";
+  return w;
+}
+function hasEntries(num) {
+  const w = state.weeks && state.weeks[num];
+  if (!w) return false;
+  const s = (w.status || []).some(x => x);
+  const n = w.notes && (w.notes.opp || w.notes.cha || w.notes.chg);
+  return s || n || (w.friday && w.friday.length);
+}
+
+function setSave(t) { const s = document.getElementById("save"); if (s) s.textContent = t || ""; }
+function scheduleSave() {
+  if (!canEdit) return;
+  setSave("Saving…");
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(doSave, 700);
+}
+async function doSave() {
+  try {
+    const r = await fetch(`${API}/api/${ID}`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ key: editKey, state })
+    });
+    setSave(r.ok ? "Saved ✓" : "Save failed");
+  } catch (e) { setSave("Save failed"); }
+}
+function autoGrow(t) { t.style.height = "auto"; t.style.height = t.scrollHeight + "px"; }
+
+function renderWeekDetail() {
+  const host = document.getElementById("weekDetail");
+  host.innerHTML = "";
+  const w = wk(current);
+  const meta = D.weeks.find(x => x.num === current);
+  host.appendChild(el("div", {}, [
+    el("div", { class: "wkmeta", text: `Week ${meta.num}  |  ${meta.start} - ${meta.end}` }),
+    el("h2", { class: "wktitle", text: D.weeklyTitle }),
+    el("div", { class: "wksub", text: D.weeklySubtitle }),
+  ]));
+  host.appendChild(el("div", { class: "section-label", text: D.checkinLabel }));
+  host.appendChild(el("div", { class: "section-hint", text: D.checkinHint }));
+
+  D.rules.forEach((r, i) => {
+    const seg = el("div", { class: "seg" });
+    STATUS.forEach((key, ki) => {
+      const on = w.status[i] === key;
+      const b = el("button", { class: "segb" + (on ? " on-" + key : ""), text: D.statusLabels[ki] });
+      if (canEdit) b.addEventListener("click", () => {
+        w.status[i] = (w.status[i] === key) ? null : key;
+        renderWeekDetail(); renderPicker(); scheduleSave();
+      }); else b.disabled = true;
+      seg.appendChild(b);
+    });
+    host.appendChild(el("div", { class: "cic" },
+      el("div", { class: "cictop" }, [
+        el("div", { class: "num", text: String(i + 1) }),
+        el("div", { style: { flex: "1" } }, [el("div", { class: "cittl", text: r.titleMixed }), seg])
+      ])
+    ));
+  });
+
+  D.noteRules.forEach(n => {
+    const ta = el("textarea", { rows: "1" });
+    ta.value = w.notes[n.key] || "";
+    if (canEdit) ta.addEventListener("input", e => { w.notes[n.key] = e.target.value; autoGrow(ta); scheduleSave(); });
+    else ta.readOnly = true;
+    host.appendChild(el("div", { class: "note" }, [
+      el("div", { class: "notelabel", text: n.label }),
+      el("div", { class: "notehint", text: n.hint }),
+      ta
+    ]));
+    requestAnimationFrame(() => autoGrow(ta));
+  });
+
+  const fta = el("textarea", { rows: "1" });
+  fta.value = w.friday || "";
+  if (canEdit) fta.addEventListener("input", e => { w.friday = e.target.value; autoGrow(fta); scheduleSave(); });
+  else fta.readOnly = true;
+  host.appendChild(el("div", { class: "friday" }, [
+    el("div", { class: "fqlabel", text: D.fridayLabel }),
+    el("div", { class: "fqtext", text: meta.q }),
+    fta
+  ]));
+  requestAnimationFrame(() => autoGrow(fta));
+}
+
+function renderPicker() {
+  const host = document.getElementById("wkpick");
+  if (!host) return;
+  host.innerHTML = "";
+  D.weeks.forEach(x => {
+    const b = el("button", { class: "wkbtn" + (x.num === current ? " active" : "") + (hasEntries(x.num) ? " done" : ""), text: String(x.num) });
+    b.addEventListener("click", () => { current = x.num; renderPicker(); renderWeekDetail(); b.scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" }); });
+    host.appendChild(b);
+  });
+}
+
+function render() {
+  root.innerHTML = "";
+  const app = el("div", { class: "pad", id: "app" });
+  const wrap = el("div", { class: "wrap" }, [
+    el("div", { class: "topbar" }, [
+      el("span", { class: "who", text: `${D.ownerName}’s Rule of 5` }),
+      el("span", { class: "badge " + (canEdit ? "edit" : "read"), text: canEdit ? "You can edit" : "Read only" }),
+      el("span", { class: "save", id: "save" }),
+    ]),
+    app,
+  ]);
+  root.appendChild(wrap);
+
+  app.appendChild(el("div", { class: "eyebrow", text: D.eyebrow }));
+  app.appendChild(el("h1", { class: "title", text: "The Rule of 5" }));
+  app.appendChild(el("div", { class: "subtitle", text: D.subtitle }));
+  app.appendChild(el("div", { class: "rule" }));
+
+  if (!canEdit) {
+    app.appendChild(el("div", { class: "readbanner" }, [
+      el("span", { text: "You are viewing " }), el("b", { text: D.ownerName + "’s" }),
+      el("span", { text: ` tracker. You can read every entry, but only ${D.ownerName} can make changes.` }),
+    ]));
+  }
+
+  const det = el("details", { class: "rules" }, el("summary", { text: "The 5 commitments" }));
+  D.rules.forEach((r, i) => det.appendChild(el("div", { class: "rref" }, [
+    el("div", { class: "num", text: String(i + 1) }),
+    el("div", {}, [el("div", { class: "rttl", text: r.title }), el("div", { class: "rbody", text: r.body })]),
+  ])));
+  app.appendChild(det);
+
+  app.appendChild(el("div", { class: "section-label", text: "Weekly check-in" }));
+  app.appendChild(el("div", { class: "wkpick", id: "wkpick" }));
+  app.appendChild(el("div", { id: "weekDetail" }));
+  app.appendChild(el("div", { class: "footer", text: D.footer }));
+
+  renderPicker();
+  renderWeekDetail();
+  const act = document.querySelector(".wkbtn.active");
+  if (act) act.scrollIntoView({ block: "nearest", inline: "center" });
+}
+
+async function boot() {
+  if (!ID) { chooser(); return; }
+  root.innerHTML = "<div style='color:#f0ebe0;text-align:center;padding:60px;font-family:Inter,sans-serif'>Loading…</div>";
+  try {
+    const r = await fetch(`${API}/api/${ID}${location.search}`);
+    if (!r.ok) throw new Error("http " + r.status);
+    const res = await r.json();
+    D = res.content;
+    state = (res.state && typeof res.state === "object") ? res.state : { weeks: {} };
+    if (!state.weeks) state.weeks = {};
+    canEdit = !!res.canEdit;
+    current = D.weeks[0].num;
+    render();
+  } catch (e) {
+    root.innerHTML = "<div style='color:#f0ebe0;text-align:center;padding:60px;font-family:Inter,sans-serif'>Could not load this tracker.<br>Please check the link and refresh.</div>";
+  }
+}
+boot();
+</script>
+</body>
+</html>
